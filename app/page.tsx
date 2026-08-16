@@ -1,69 +1,121 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import CoinCard from "./components/CoinCard";
+import SkeletonCard from "./components/SkeletonCard";
+import type { Coin, CoinApiData } from "./types";
 
 export default function Home() {
+  const [coins, setCoins] = useState<Coin[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    async function loadCoins() {
+      try {
+        const response = await fetch(
+          "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,the-open-network&vs_currencies=usd&include_24hr_change=true",
+        );
+
+        if (!response.ok) {
+          throw new Error("Ошибка загрузки данных");
+        }
+
+        const data: CoinApiData = await response.json();
+
+        const newCoins: Coin[] = [
+          {
+            name: "Bitcoin",
+            symbol: "BTC",
+            price: data.bitcoin.usd,
+            change: data.bitcoin.usd_24h_change,
+          },
+          {
+            name: "Ethereum",
+            symbol: "ETH",
+            price: data.ethereum.usd,
+            change: data.ethereum.usd_24h_change,
+          },
+          {
+            name: "Solana",
+            symbol: "SOL",
+            price: data.solana.usd,
+            change: data.solana.usd_24h_change,
+          },
+          {
+            name: "Toncoin",
+            symbol: "TON",
+            price: data["the-open-network"].usd,
+            change: data["the-open-network"].usd_24h_change,
+          },
+        ];
+
+        setCoins(newCoins);
+      } catch (error) {
+        console.error(error);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadCoins();
+
+    const interval = setInterval(() => {
+      loadCoins();
+    }, 30000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  function increasePrice(symbol: string) {
+    setCoins((currentCoins) => {
+      return currentCoins.map((currentCoin) => {
+        if (currentCoin.symbol === symbol) {
+          return {
+            ...currentCoin,
+            price: currentCoin.price + 1000,
+          };
+        }
+
+        return currentCoin;
+      });
+    });
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="min-h-screen bg-zinc-950 px-6 py-10 text-white">
+      <div className="mx-auto max-w-6xl">
+        <header className="mb-10">
+          <p className="mb-2 text-sm font-medium uppercase tracking-widest text-zinc-500">
+            Crypto Cards
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+
+          <h1 className="text-4xl font-bold tracking-tight">
+            Cryptocurrency market
+          </h1>
+
+          <p className="mt-3 text-zinc-400">Current prices and market data</p>
+        </header>
+
+        <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {loading ? (
+            Array.from({ length: 4 }, (_, i) => <SkeletonCard key={i} />)
+          ) : error ? (
+            <p>Не удалось загрузить данные</p>
+          ) : (
+            coins.map((coin) => (
+              <CoinCard
+                key={coin.symbol}
+                coin={coin}
+                increasePrice={increasePrice}
+              />
+            ))
+          )}
+        </section>
+      </div>
+    </main>
   );
 }
