@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import CoinCard from "./components/CoinCard";
 import SkeletonCard from "./components/SkeletonCard";
 import Button from "./components/UI/Button";
-import type { Coin, CoinApiData } from "./types";
+import type { Coin } from "./types";
 
 export default function Home() {
   const [coins, setCoins] = useState<Coin[]>([]);
@@ -18,48 +18,15 @@ export default function Home() {
     setError("");
 
     try {
-      const response = await fetch(
-        "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,the-open-network&vs_currencies=usd&include_24hr_change=true",
-      );
+      const response = await fetch("/api/prices");
 
       if (!response.ok) {
-        if (response.status === 429) {
-          throw new Error(
-            "Слишком много запросов. Подожди немного и попробуй снова.",
-          );
-        }
+        const errorData: { message?: string } = await response.json();
 
-        throw new Error("Ошибка загрузки данных.");
+        throw new Error(errorData.message ?? "Ошибка загрузки данных.");
       }
 
-      const data: CoinApiData = await response.json();
-
-      const newCoins: Coin[] = [
-        {
-          name: "Bitcoin",
-          symbol: "BTC",
-          price: data.bitcoin.usd,
-          change: data.bitcoin.usd_24h_change,
-        },
-        {
-          name: "Ethereum",
-          symbol: "ETH",
-          price: data.ethereum.usd,
-          change: data.ethereum.usd_24h_change,
-        },
-        {
-          name: "Solana",
-          symbol: "SOL",
-          price: data.solana.usd,
-          change: data.solana.usd_24h_change,
-        },
-        {
-          name: "Toncoin",
-          symbol: "TON",
-          price: data["the-open-network"].usd,
-          change: data["the-open-network"].usd_24h_change,
-        },
-      ];
+      const newCoins: Coin[] = await response.json();
 
       setCoins(newCoins);
       setLastUpdated(new Date());

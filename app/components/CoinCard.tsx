@@ -7,13 +7,6 @@ type CoinCardProps = {
 };
 
 export default function CoinCard({ coin }: CoinCardProps) {
-  function formatPrice(price: number) {
-    return price.toLocaleString("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  }
-
   return (
     <article className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 transition hover:border-zinc-700 hover:bg-zinc-800">
       <div className="mb-8 flex items-center justify-between">
