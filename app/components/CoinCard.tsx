@@ -1,11 +1,19 @@
 import type { Coin } from "../types";
+import { formatPrice } from "../utils/formatPrice";
+import { formatChange } from "../utils/formatChange";
 
 type CoinCardProps = {
   coin: Coin;
-  increasePrice: (symbol: string) => void;
 };
 
-export default function CoinCard({ coin, increasePrice }: CoinCardProps) {
+export default function CoinCard({ coin }: CoinCardProps) {
+  function formatPrice(price: number) {
+    return price.toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+
   return (
     <article className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 transition hover:border-zinc-700 hover:bg-zinc-800">
       <div className="mb-8 flex items-center justify-between">
@@ -19,17 +27,14 @@ export default function CoinCard({ coin, increasePrice }: CoinCardProps) {
         </div>
       </div>
 
-      <p className="text-2xl font-bold">${coin.price.toLocaleString()}</p>
-
-      <button onClick={() => increasePrice(coin.symbol)}>Поднять цену</button>
+      <p className="text-2xl font-bold">${formatPrice(coin.price)}</p>
 
       <p
         className={`mt-2 text-sm font-medium ${
           coin.change >= 0 ? "text-emerald-400" : "text-red-400"
         }`}
       >
-        {coin.change >= 0 ? "+" : ""}
-        {coin.change.toFixed(2)}%
+        {formatChange(coin.change)}
       </p>
     </article>
   );
