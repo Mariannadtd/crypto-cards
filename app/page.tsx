@@ -1,52 +1,22 @@
-"use client";
-
-import { useCallback, useEffect, useState } from "react";
-import CoinCard from "./components/CoinCard";
-import SkeletonCard from "./components/SkeletonCard";
-import Button from "./components/UI/Button";
+import CryptoDashboard from "./components/CryptoDashboard";
+import { getCoins } from "./lib/getCoins";
 import type { Coin } from "./types";
 
-export default function Home() {
-  const [coins, setCoins] = useState<Coin[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [refreshing, setRefreshing] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+export default async function Home() {
+  let initialCoins: Coin[] = [];
+  let initialError = "";
+  let initialLastUpdated: string | null = null;
 
-  const loadCoins = useCallback(async function () {
-    setRefreshing(true);
-    setError("");
-
-    try {
-      const response = await fetch("/api/prices");
-
-      if (!response.ok) {
-        const errorData: { message?: string } = await response.json();
-
-        throw new Error(errorData.message ?? "Ошибка загрузки данных.");
-      }
-
-      const newCoins: Coin[] = await response.json();
-
-      setCoins(newCoins);
-      setLastUpdated(new Date());
-    } catch (error) {
-      console.error(error);
-
-      if (error instanceof Error) {
-        setError(error.message);
-      } else {
-        setError("Неизвестная ошибка.");
-      }
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
+  try {
+    initialCoins = await getCoins();
+    initialLastUpdated = new Date().toISOString();
+  } catch (error) {
+    if (error instanceof Error) {
+      initialError = error.message;
+    } else {
+      initialError = "Неизвестная ошибка.";
     }
-  }, []);
-
-  useEffect(() => {
-    loadCoins();
-  }, [loadCoins]);
+  }
 
   return (
     <main className="min-h-screen bg-zinc-950 px-6 py-10 text-white">
@@ -61,33 +31,13 @@ export default function Home() {
           </h1>
 
           <p className="mt-3 text-zinc-400">Current prices and market data</p>
-
-          {lastUpdated && (
-            <p className="mt-2 text-sm text-zinc-500">
-              Последнее обновление: {lastUpdated.toLocaleTimeString()}
-            </p>
-          )}
         </header>
 
-        {error && !loading && (
-          <p className="mb-5 rounded-xl border border-red-900 bg-red-950 px-4 py-3 text-sm text-red-300">
-            {error}
-          </p>
-        )}
-
-        <Button onClick={loadCoins} disabled={refreshing} className="mb-5">
-          {refreshing ? "Обновляется..." : "Обновить"}
-        </Button>
-
-        <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {loading ? (
-            Array.from({ length: 4 }, (_, i) => <SkeletonCard key={i} />)
-          ) : coins.length > 0 ? (
-            coins.map((coin) => <CoinCard key={coin.symbol} coin={coin} />)
-          ) : (
-            <p>Не удалось загрузить данные</p>
-          )}
-        </section>
+        <CryptoDashboard
+          initialCoins={initialCoins}
+          initialError={initialError}
+          initialLastUpdated={initialLastUpdated}
+        />
       </div>
     </main>
   );
