@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import CryptoDashboard from "./components/CryptoDashboard";
 import { getCoins } from "./lib/getCoins";
 import type { Coin } from "./types";
+
+export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Crypto Cards",
+  description: "Live cryptocurrency prices for BTC, ETH, SOL and TON",
+};
 
 export default async function Home() {
   let initialCoins: Coin[] = [];
