@@ -4,6 +4,8 @@ import type { Coin } from "../types";
 const COINGECKO_PRICES_URL =
   "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana,the-open-network&vs_currencies=usd&include_24hr_change=true";
 
+const CACHE_TIME_IN_MS = 60_000;
+
 const coinGeckoCoinSchema = z.object({
   usd: z.number(),
   usd_24h_change: z.number(),
@@ -16,11 +18,29 @@ const coinApiDataSchema = z.object({
   "the-open-network": coinGeckoCoinSchema,
 });
 
+let cachedCoins: Coin[] | null = null;
+let cachedAt = 0;
+
 export async function getCoins(): Promise<Coin[]> {
-  const response = await fetch(COINGECKO_PRICES_URL);
+  const now = Date.now();
+
+  if (cachedCoins && now - cachedAt < CACHE_TIME_IN_MS) {
+    return cachedCoins;
+  }
+
+  const response = await fetch(COINGECKO_PRICES_URL, {
+    headers: {
+      accept: "application/json",
+      "user-agent": "crypto-cards-learning-project",
+    },
+  });
 
   if (!response.ok) {
-    if (response.status === 429) {
+    if (cachedCoins) {
+      return cachedCoins;
+    }
+
+    if (response.status === 403 || response.status === 429) {
       throw new Error(
         "Слишком много запросов. Подожди немного и попробуй снова.",
       );
@@ -65,6 +85,9 @@ export async function getCoins(): Promise<Coin[]> {
       change: data["the-open-network"].usd_24h_change,
     },
   ];
+
+  cachedCoins = newCoins;
+  cachedAt = now;
 
   return newCoins;
 }

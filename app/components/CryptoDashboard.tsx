@@ -1,9 +1,16 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import CoinCard from "./CoinCard";
 import Button from "./UI/Button";
 import type { Coin } from "../types";
+import WalletConnect from "./WalletConnect";
+import MyCryptoCards from "./MyCryptoCards";
+
+const MarketScene = dynamic(() => import("./MarketScene"), {
+  ssr: false,
+});
 
 type CryptoDashboardProps = {
   initialCoins: Coin[];
@@ -70,6 +77,12 @@ export default function CryptoDashboard({
       <Button onClick={loadCoins} disabled={refreshing} className="mb-5 mt-5">
         {refreshing ? "Обновляется..." : "Обновить"}
       </Button>
+
+      <WalletConnect />
+
+      <MyCryptoCards />
+
+      {coins.length > 0 && <MarketScene coins={coins} />}
 
       <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {coins.length > 0 ? (
