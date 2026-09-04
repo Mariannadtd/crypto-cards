@@ -1,5 +1,7 @@
 # 🪙 Crypto Cards — крипто-дашборд на Next.js + Web3
 
+<img width="1933" height="1036" alt="crptcrd" src="https://github.com/user-attachments/assets/676cfe94-ebc1-4415-a458-58672739e039" />
+
 **Crypto Cards** — учебное web3-приложение для просмотра криптовалютного рынка и взаимодействия со смарт-контрактом через MetaMask.  
 Проект построен на **Next.js**, **React**, **TypeScript**, **ethers.js** и **Three.js**: приложение показывает актуальные цены монет, визуализирует рынок в 3D-сцене и позволяет пользователю сохранять выбранные crypto cards в смарт-контракте Sepolia.
 
