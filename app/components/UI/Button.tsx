@@ -9,7 +9,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseClassName =
-    "rounded border border-zinc-800 bg-zinc-900 px-4 py-2 hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-50";
+    "inline-flex min-h-10 items-center justify-center rounded-md border border-emerald-300/25 bg-emerald-300/10 px-4 py-2 text-sm font-semibold text-emerald-50 shadow-sm shadow-emerald-950/30 transition hover:border-emerald-200/60 hover:bg-emerald-300/20 disabled:cursor-not-allowed disabled:border-stone-700 disabled:bg-stone-800/70 disabled:text-stone-500 disabled:shadow-none";
 
   return (
     <button type={type} className={`${baseClassName} ${className}`} {...props}>

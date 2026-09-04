@@ -1,6 +1,8 @@
 export const CRYPTO_CARDS_ADDRESS =
   "0x86A5c7B70D5D9554C87cB2Ff4E4f9517b2f5B6DE";
 
+export const CRYPTO_CARDS_CHAIN_ID = "0xaa36a7";
+
 export const CRYPTO_CARDS_ABI = [
   {
     anonymous: false,

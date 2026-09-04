@@ -39,17 +39,17 @@ export default async function CoinDetailsPage({
   const changeIsPositive = coin.change >= 0;
 
   return (
-    <main className="min-h-screen bg-zinc-950 px-6 py-10 text-white">
+    <main className="app-background min-h-screen px-6 py-10 text-stone-50">
       <div className="mx-auto max-w-4xl">
         <Link
           href="/"
-          className="inline-flex rounded border border-zinc-800 bg-zinc-900 px-4 py-2 text-sm text-zinc-300 hover:bg-zinc-800"
+          className="inline-flex min-h-10 items-center rounded-md border border-emerald-300/25 bg-emerald-300/10 px-4 py-2 text-sm font-semibold text-emerald-50 hover:bg-emerald-300/20"
         >
           Назад
         </Link>
 
         <header className="mt-10">
-          <p className="mb-2 text-sm font-medium uppercase tracking-widest text-zinc-500">
+          <p className="mb-2 text-sm font-medium uppercase text-emerald-200/70">
             Coin Details
           </p>
 
@@ -57,15 +57,15 @@ export default async function CoinDetailsPage({
             {coin.name} ({coin.symbol})
           </h1>
 
-          <p className="mt-3 text-zinc-400">
+          <p className="mt-3 text-stone-300">
             Live market snapshot from CoinGecko
           </p>
         </header>
 
-        <section className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
+        <section className="mt-8 rounded-lg border border-teal-300/15 bg-stone-900/75 p-6 shadow-xl shadow-emerald-950/10">
           <div className="flex flex-wrap items-start justify-between gap-6">
             <div>
-              <p className="text-sm text-zinc-500">Current price</p>
+              <p className="text-sm text-stone-500">Current price</p>
 
               <p className="mt-2 text-4xl font-bold">
                 ${formatPrice(coin.price)}
@@ -84,18 +84,18 @@ export default async function CoinDetailsPage({
           </div>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
-            <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4">
-              <p className="text-sm text-zinc-500">Symbol</p>
+            <div className="rounded-lg border border-stone-700/70 bg-stone-950/50 p-4">
+              <p className="text-sm text-stone-500">Symbol</p>
               <p className="mt-2 text-lg font-semibold">{coin.symbol}</p>
             </div>
 
-            <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4">
-              <p className="text-sm text-zinc-500">Name</p>
+            <div className="rounded-lg border border-stone-700/70 bg-stone-950/50 p-4">
+              <p className="text-sm text-stone-500">Name</p>
               <p className="mt-2 text-lg font-semibold">{coin.name}</p>
             </div>
 
-            <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4">
-              <p className="text-sm text-zinc-500">24h change</p>
+            <div className="rounded-lg border border-stone-700/70 bg-stone-950/50 p-4">
+              <p className="text-sm text-stone-500">24h change</p>
               <p
                 className={`mt-2 text-lg font-semibold ${
                   changeIsPositive ? "text-emerald-400" : "text-red-400"

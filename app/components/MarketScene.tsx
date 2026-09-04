@@ -329,7 +329,8 @@ export default function MarketScene({ coins }: MarketSceneProps) {
         bubble.shell.rotation.x += 0.002;
         bubble.wire.rotation.y -= 0.003;
         bubble.wire.rotation.x += 0.002;
-        bubble.haloMaterial.opacity = 0.44 + Math.sin(seconds * 1.3 + index) * 0.08;
+        bubble.haloMaterial.opacity =
+          0.44 + Math.sin(seconds * 1.3 + index) * 0.08;
       });
 
       renderer.render(scene, camera);
@@ -371,8 +372,8 @@ export default function MarketScene({ coins }: MarketSceneProps) {
   }
 
   return (
-    <div className="relative mb-8 overflow-hidden rounded-lg border border-zinc-800 bg-zinc-950 shadow-xl shadow-black/25">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-zinc-950 to-transparent" />
+    <div className="relative mb-8 overflow-hidden rounded-lg border border-emerald-300/15 bg-stone-950/70 shadow-xl shadow-emerald-950/15">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-stone-950/80 to-transparent" />
       <div ref={containerRef} className="h-72 w-full sm:h-80" />
     </div>
   );
