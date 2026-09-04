@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCoins } from "../../lib/getCoins";
+import {
+  FALLBACK_COINS,
+  SUPPORTED_COIN_SYMBOLS,
+  getCoins,
+} from "../../lib/getCoins";
 import { formatChange } from "../../utils/formatChange";
 import { formatPrice } from "../../utils/formatPrice";
 
@@ -10,6 +14,14 @@ type CoinDetailsPageProps = {
     symbol: string;
   }>;
 };
+
+export function generateStaticParams() {
+  return SUPPORTED_COIN_SYMBOLS.map((symbol) => ({
+    symbol,
+  }));
+}
+
+export const dynamicParams = false;
 
 export async function generateMetadata({
   params,
@@ -29,7 +41,14 @@ export default async function CoinDetailsPage({
   const { symbol } = await params;
   const normalizedSymbol = symbol.toUpperCase();
 
-  const coins = await getCoins();
+  let coins = FALLBACK_COINS;
+
+  try {
+    coins = await getCoins();
+  } catch {
+    coins = FALLBACK_COINS;
+  }
+
   const coin = coins.find((coin) => coin.symbol === normalizedSymbol);
 
   if (!coin) {

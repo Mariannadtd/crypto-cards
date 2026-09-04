@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import CryptoDashboard from "./components/CryptoDashboard";
-import { getCoins } from "./lib/getCoins";
+import { FALLBACK_COINS, getCoins } from "./lib/getCoins";
 import type { Coin } from "./types";
-
-export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Crypto Cards",
@@ -24,6 +22,8 @@ export default async function Home() {
     } else {
       initialError = "Неизвестная ошибка.";
     }
+
+    initialCoins = FALLBACK_COINS;
   }
 
   return (

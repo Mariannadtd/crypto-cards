@@ -10,6 +10,7 @@ import MyCryptoCards from "./MyCryptoCards";
 import { useWallet } from "../hooks/useWallet";
 import { CRYPTO_CARDS_CHAIN_ID } from "../lib/cryptoCardsContract";
 import { getEthereumErrorMessage } from "../lib/ethereum";
+import { getCoins } from "../lib/getCoins";
 import { getMyCryptoCards } from "../lib/getMyCryptoCards";
 import { mintCryptoCard } from "../lib/mintCryptoCard";
 
@@ -22,6 +23,20 @@ type CryptoDashboardProps = {
   initialError: string;
   initialLastUpdated: string | null;
 };
+
+const isGithubPages = process.env.NEXT_PUBLIC_GITHUB_PAGES === "true";
+
+async function getCoinsFromApiRoute(): Promise<Coin[]> {
+  const response = await fetch("/api/prices");
+
+  if (!response.ok) {
+    const errorData: { message?: string } = await response.json();
+
+    throw new Error(errorData.message ?? "Ошибка загрузки данных.");
+  }
+
+  return response.json();
+}
 
 export default function CryptoDashboard({
   initialCoins,
@@ -55,15 +70,9 @@ export default function CryptoDashboard({
     setError("");
 
     try {
-      const response = await fetch("/api/prices");
-
-      if (!response.ok) {
-        const errorData: { message?: string } = await response.json();
-
-        throw new Error(errorData.message ?? "Ошибка загрузки данных.");
-      }
-
-      const newCoins: Coin[] = await response.json();
+      const newCoins = isGithubPages
+        ? await getCoins()
+        : await getCoinsFromApiRoute();
 
       setCoins(newCoins);
       setLastUpdated(new Date().toISOString());

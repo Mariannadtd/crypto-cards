@@ -6,6 +6,37 @@ const COINGECKO_PRICES_URL =
 
 const CACHE_TIME_IN_MS = 60_000;
 
+export const FALLBACK_COINS: Coin[] = [
+  {
+    name: "Bitcoin",
+    symbol: "BTC",
+    price: 80000,
+    change: 2.4,
+  },
+  {
+    name: "Ethereum",
+    symbol: "ETH",
+    price: 2500,
+    change: 1.8,
+  },
+  {
+    name: "Solana",
+    symbol: "SOL",
+    price: 105,
+    change: 4.6,
+  },
+  {
+    name: "Toncoin",
+    symbol: "TON",
+    price: 1.45,
+    change: -0.7,
+  },
+];
+
+export const SUPPORTED_COIN_SYMBOLS = FALLBACK_COINS.map(
+  (coin) => coin.symbol,
+);
+
 const coinGeckoCoinSchema = z.object({
   usd: z.number(),
   usd_24h_change: z.number(),
@@ -28,12 +59,21 @@ export async function getCoins(): Promise<Coin[]> {
     return cachedCoins;
   }
 
-  const response = await fetch(COINGECKO_PRICES_URL, {
-    headers: {
-      accept: "application/json",
-      "user-agent": "crypto-cards-learning-project",
-    },
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(COINGECKO_PRICES_URL, {
+      headers: {
+        accept: "application/json",
+      },
+    });
+  } catch {
+    if (cachedCoins) {
+      return cachedCoins;
+    }
+
+    throw new Error("Ошибка загрузки данных.");
+  }
 
   if (!response.ok) {
     if (cachedCoins) {
@@ -54,6 +94,10 @@ export async function getCoins(): Promise<Coin[]> {
   const result = coinApiDataSchema.safeParse(json);
 
   if (!result.success) {
+    if (cachedCoins) {
+      return cachedCoins;
+    }
+
     throw new Error("CoinGecko вернул данные в неожиданном формате.");
   }
 
