@@ -19,10 +19,6 @@ npm run dev
 http://localhost:3000
 ```
 
-### 💻 Репозиторий
-
-https://github.com/Mariannadtd/crypto-cards
-
 ---
 
 ## 🛠 Технологии проекта
